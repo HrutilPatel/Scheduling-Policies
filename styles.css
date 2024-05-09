@@ -1,0 +1,26 @@
+.head {
+
+    font-size: max(50px);
+    font-family: Courier, serif;
+    text-align: center;
+
+}
+
+.body_section{
+
+    font-size: 30px;
+    font-family: Courier, serif;
+
+}
+
+header{
+
+    padding: 50px;
+    padding-bottom: 70px;
+
+}
+
+label, input[type="text"], select {
+    display: inline-block;
+    vertical-align: middle;
+}
