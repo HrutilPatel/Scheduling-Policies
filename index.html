@@ -4,7 +4,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduling Policies | Operating System </title>
+    <title>Scheduling Policies | OS </title>
     <link rel = "stylesheet" href = "styles.css">
 
 </head>
@@ -25,7 +25,7 @@
 
         <!--    Selecting the Policy    -->
         <label>Select the Policy  :</label>
-        <select id = "Plist">
+        <select id = "Policylist">
 
             <option value = "FIFO">FIFO</option>
             <option value = "SJF">SJF</option>
@@ -38,12 +38,28 @@
 
         <!--    Number of Processes    -->
         <label >Number of Processes :</label>
-        <input type="text" id="numProcesses" name="numProcesses">
+        <select id = "Processlist">
+
+            <option value = 5>5</option>
+            <option value = 10>10</option>
+            <option value = 15>15</option>
+            <option value = 20>20</option>
+
+        </select>
+
+        <br>
+
+        <div class = "buttonGrid">
+            <button id="processButton">Process Data</button>
+        </div>
 
     </main>
 
     <!-- Script   -->
-    <script src="script.js"></script>
+    <script src="script.js" type="module"></script>
+
+    <!-- Container to display processes -->
+    <div id="processContainer" class="process-container"></div>
 
 </body>
 

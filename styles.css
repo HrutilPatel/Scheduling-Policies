@@ -8,8 +8,17 @@
 
 .body_section{
 
+    margin: 20px;
     font-size: 30px;
     font-family: Courier, serif;
+
+}
+
+.buttonGrid{
+
+    margin-top: 20px;
+    padding: 50px;
+    padding-left: 70px;
 
 }
 
@@ -20,7 +29,29 @@ header{
 
 }
 
-label, input[type="text"], select {
-    display: inline-block;
-    vertical-align: middle;
+
+
+
+.process-container {
+
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+
+}
+
+.process-box {
+
+    border: 1px solid #d50e0e;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    width: calc(25% - 20px); /* Adjust width as needed */
+    box-sizing: border-box;
+
+}
+
+.process-box p {
+    margin: 5px 0;
+    font-size: 14px;
 }

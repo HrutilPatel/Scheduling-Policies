@@ -1,4 +1,4 @@
-class process {
+class Process {
 
     #arrivalTime;
     #firstRun;
@@ -48,4 +48,4 @@ class process {
 
 }
 
-export { Process };
+export { Process};
