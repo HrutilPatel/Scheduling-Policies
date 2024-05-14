@@ -55,29 +55,40 @@ function getRandomNumber() {
 
 }
 
-function createProcess(){
-
-    for(let i = 0; i < selectedPolicy; i++){
-
-        let p = new Process(0,0,0,getRandomNumber());
-        p.getArrivalTime();
-
-        processArray.push( new Process(0,0,0,getRandomNumber()));
-
+function createProcess() {
+    for (let i = 0; i < numProcess; i++) { // Change selectedPolicy to numProcess
+        let p = new Process(0, 0, 0, getRandomNumber());
+        processArray.push(new Process(0, 0, 0, getRandomNumber()));
     }
 
     displayProcesses();
-
 }
 
+
 function displayProcesses() {
+    console.log("Hello I was called");
+
+    // Check if container exists
     const container = document.getElementById('processContainer');
-    container.innerHTML = ''; // Clear previous content
+    if (!container) {
+        console.error("Container element not found.");
+        return;
+    }
+
+    // Clear previous content
+    container.innerHTML = '';
+
+    // Check if processArray is defined
+    if (!processArray || processArray.length === 0) {
+        console.error("No processes found.");
+        return;
+    }
 
     // Use a for loop to iterate over the processArray
     for (let i = 0; i < processArray.length; i++) {
         const process = processArray[i]; // Get the current process from the array
 
+        // Create process box
         const processBox = document.createElement('div');
         processBox.classList.add('process-box');
         processBox.innerHTML =
@@ -86,9 +97,10 @@ function displayProcesses() {
             <p>Completion Time: ${process.completionTime}</p>
             <p>Remaining Time: ${process.remainingTime}</p>`;
 
-        container.appendChild(processBox);
+        container.appendChild(processBox); // Append process box to container
     }
 }
+
 
 
 
