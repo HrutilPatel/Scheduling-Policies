@@ -1,66 +1,78 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduling Policies | OS </title>
-    <link rel = "stylesheet" href = "styles.css">
+    <title>Scheduling Policies | OS</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 
 </head>
 
 <body>
-
-    <header>
-
-        <div class = "head" >
-
-            Scheduling Policies
-
-        </div>
-
+    <header class="text-center">
+        <h1>Scheduling Policies</h1>
     </header>
 
-    <main class = "body_section">
-
-        <!--    Selecting the Policy    -->
-        <label>Select the Policy  :</label>
-        <select id = "Policylist">
-
-            <option value = "FIFO">FIFO</option>
-            <option value = "SJF">SJF</option>
-            <option value = "RR">RR</option>
-            <option value = "MLFQ">MLFQ</option>
-
-        </select>
-
-        <br>
-
-        <!--    Number of Processes    -->
-        <label >Number of Processes :</label>
-        <select id = "Processlist">
-
-            <option value = 5>5</option>
-            <option value = 10>10</option>
-            <option value = 15>15</option>
-            <option value = 20>20</option>
-
-        </select>
-
-        <br>
-
-        <div class = "buttonGrid">
-            <button id="processButton">Process Data</button>
+    <main class="container py-4">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="Policylist" class="form-label">Select the Policy:</label>
+                <select id="Policylist" class="form-select">
+                    <option value="FIFO">FIFO</option>
+                    <option value="SJF">SJF</option>
+                    <option value="RR">RR</option>
+                    <option value="MLFQ">MLFQ</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="Processlist" class="form-label">Number of Processes:</label>
+                <select id="Processlist" class="form-select">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
         </div>
 
+        <div class="text-center mb-4">
+            <button id="processButton" class="btn btn-primary">Process Data</button>
+        </div>
+
+        <div class="clock" id="clock">Time: 0s</div>
+
+        <div class="section" id="incomingSection">
+            <h5>Incoming Workload</h5>
+            <div id="incomingWorkload"></div>
+        </div>
+
+        <div class="section">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Running Task</h5>
+                    <div id="runningTask"></div>
+                </div>
+                <div class="col-md-6">
+                    <h5>Current Task Queue</h5>
+                    <div id="currentTaskQueue"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h5>Completed Tasks</h5>
+            <div id="completedTasks"></div>
+        </div>
     </main>
 
-    <!-- Script   -->
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script -->
     <script src="script.js" type="module"></script>
-
-    <!-- Container to display processes -->
-    <div id="processContainer" class="process-container"></div>
-
 </body>
 
 </html>

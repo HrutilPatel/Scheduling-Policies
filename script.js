@@ -1,113 +1,131 @@
 import { Process } from './Process.js';
 
-// Private Var
+// Private Variables
 let numProcess = 0;
 let selectedPolicy = "";
+let time = 0;
+let intervalId = null;
 
 // Constants
 const fifoStr = "FIFO";
-const rrStr = "RR"
-const sjfStr = "SJF";
-const mlfqStr = "MLFQ";
 const processArray = [];
+const runningTasks = [];
+const completedTasks = [];
 const min = 10;
 const max = 70;
 
-function processData(){
-
+function processData() {
     selectedPolicy = document.getElementById('Policylist').value;
     numProcess = document.getElementById('Processlist').value;
 
     createProcess();
 
-    if(fifoStr.localeCompare(selectedPolicy)){
-
-        processFIFO()
-
+    if (fifoStr === selectedPolicy) {
+        processFIFO();
     }
-    else if(rrStr.localeCompare(selectedPolicy)){
-
-
-
-    }
-    else if(sjfStr.localeCompare(selectedPolicy)){
-
-
-
-    }
-    else if (mlfqStr.localeCompare(selectedPolicy)){
-
-
-
-    }
-
 }
 
-function processFIFO(){
+function processFIFO() {
+    const queue = document.getElementById('currentQueue');
 
+    while (processArray.length > 0) {
+        const process = processArray.shift();
+        runningTasks.push(process);
 
-
+        // Simulate processing
+        setTimeout(() => {
+            runningTasks.shift();
+            completedTasks.push(process);
+            updateSections();
+        }, process.remainingTime * 100);
+    }
 }
 
 function getRandomNumber() {
-
     return Math.random() * (max - min) + min;
-
 }
 
 function createProcess() {
-    for (let i = 0; i < numProcess; i++) { // Change selectedPolicy to numProcess
+    processArray.length = 0;
+
+    for (let i = 0; i < numProcess; i++) {
         let p = new Process(0, 0, 0, getRandomNumber());
-        processArray.push(new Process(0, 0, 0, getRandomNumber()));
+        processArray.push(p);
     }
 
-    displayProcesses();
+    updateSections();
 }
 
+function updateSections() {
+    displayProcesses('incomingWorkload', processArray);
+    displayProcesses('runningTasks', runningTasks);
+    displayProcesses('completedTasks', completedTasks);
+    displayProcesses('currentQueue', processArray);
+}
 
-function displayProcesses() {
-    console.log("Hello I was called");
-
-    // Check if container exists
-    const container = document.getElementById('processContainer');
+function displayProcesses(containerId, processes) {
+    const container = document.getElementById(containerId);
     if (!container) {
-        console.error("Container element not found.");
+        console.error(`Container with ID ${containerId} not found.`);
         return;
     }
 
-    // Clear previous content
     container.innerHTML = '';
 
-    // Check if processArray is defined
-    if (!processArray || processArray.length === 0) {
-        console.error("No processes found.");
-        return;
-    }
-
-    // Use a for loop to iterate over the processArray
-    for (let i = 0; i < processArray.length; i++) {
-        const process = processArray[i]; // Get the current process from the array
-
-        // Create process box
+    processes.forEach((process, index) => {
         const processBox = document.createElement('div');
         processBox.classList.add('process-box');
-        processBox.innerHTML =
-            `<p>Arrival Time: ${process.arrivalTime}</p>
+        processBox.draggable = true;
+        processBox.setAttribute('data-index', index);
+        processBox.innerHTML = `
+            <p>Arrival: ${process.arrivalTime}</p>
             <p>First Run: ${process.firstRun}</p>
-            <p>Completion Time: ${process.completionTime}</p>
-            <p>Remaining Time: ${process.remainingTime}</p>`;
+            <p>Completion: ${process.completionTime}</p>
+            <p>Remaining: ${process.remainingTime}</p>`;
 
-        container.appendChild(processBox); // Append process box to container
-    }
+        processBox.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', containerId + ',' + index);
+        });
+
+        container.appendChild(processBox);
+    });
 }
 
+function startClock() {
+    const clock = document.getElementById('clock');
 
+    if (intervalId) clearInterval(intervalId);
 
+    intervalId = setInterval(() => {
+        time++;
+        clock.textContent = `Time: ${time}s`;
+    }, 1000);
+}
 
-// event listener to the button
-document.addEventListener('DOMContentLoaded', function() {
-
+document.addEventListener('DOMContentLoaded', function () {
     const button = document.getElementById('processButton');
-    button.addEventListener('click', processData);
+    button.addEventListener('click', () => {
+        processData();
+        startClock();
+    });
 
+    document.querySelectorAll('.process-container').forEach((container) => {
+        container.addEventListener('dragover', (e) => e.preventDefault());
+
+        container.addEventListener('drop', (e) => {
+            e.preventDefault();
+
+            const [fromContainerId, index] = e.dataTransfer.getData('text/plain').split(',');
+            const fromContainer = document.getElementById(fromContainerId);
+            const process = processArray.splice(index, 1)[0];
+
+            if (container.id === 'runningTasks') {
+                runningTasks.push(process);
+            } else if (container.id === 'completedTasks') {
+                completedTasks.push(process);
+            }
+
+            updateSections();
+        });
+    });
 });
