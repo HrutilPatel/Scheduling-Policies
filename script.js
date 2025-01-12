@@ -11,6 +11,7 @@ const fifoStr = "FIFO";
 const processArray = [];
 const runningTasks = [];
 const completedTasks = [];
+const incomingWorkload = [];
 const min = 10;
 const max = 70;
 
@@ -30,14 +31,19 @@ function processFIFO() {
 
     while (processArray.length > 0) {
         const process = processArray.shift();
-        runningTasks.push(process);
 
-        // Simulate processing
-        setTimeout(() => {
-            runningTasks.shift();
-            completedTasks.push(process);
-            updateSections();
-        }, process.remainingTime * 100);
+        incomingWorkload.push(process);  
+        updateSections();      
+
+        // runningTasks.push(process);
+        // updateSections();
+
+        // // Simulate processing
+        // setTimeout(() => {
+        //     runningTasks.shift();
+        //     completedTasks.push(process);
+        //     updateSections();
+        // }, process.remainingTime * 100);
     }
 }
 
@@ -53,18 +59,22 @@ function createProcess() {
         processArray.push(p);
     }
 
-    updateSections();
+    console.log(getRandomNumber()); 
+
 }
 
 function updateSections() {
-    displayProcesses('incomingWorkload', processArray);
-    displayProcesses('runningTasks', runningTasks);
+    displayProcesses('incomingWorkload', incomingWorkload);
+    displayProcesses('runningTasks', runningTasks); 
     displayProcesses('completedTasks', completedTasks);
     displayProcesses('currentQueue', processArray);
 }
 
+
 function displayProcesses(containerId, processes) {
+
     const container = document.getElementById(containerId);
+
     if (!container) {
         console.error(`Container with ID ${containerId} not found.`);
         return;
