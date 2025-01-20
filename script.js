@@ -17,7 +17,7 @@ const max = 70;
 
 function processData() {
     selectedPolicy = document.getElementById('Policylist').value;
-    numProcess = document.getElementById('Processlist').value;
+    numProcess = parseInt(document.getElementById('Processlist').value, 10);
 
     createProcess();
 
@@ -27,28 +27,29 @@ function processData() {
 }
 
 function processFIFO() {
-    const queue = document.getElementById('currentQueue');
-
     while (processArray.length > 0) {
         const process = processArray.shift();
 
-        incomingWorkload.push(process);  
-        updateSections();      
+        incomingWorkload.push(process);
+        updateSections();
 
-        // runningTasks.push(process);
-        // updateSections();
+        // Simulate processing by moving from incoming to running and then to completed
+        setTimeout(() => {
+            incomingWorkload.shift();
+            runningTasks.push(process);
+            updateSections();
 
-        // // Simulate processing
-        // setTimeout(() => {
-        //     runningTasks.shift();
-        //     completedTasks.push(process);
-        //     updateSections();
-        // }, process.remainingTime * 100);
+            setTimeout(() => {
+                runningTasks.shift();
+                completedTasks.push(process);
+                updateSections();
+            }, process.remainingTime * 100);
+        }, 500);
     }
 }
 
 function getRandomNumber() {
-    return Math.random() * (max - min) + min;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function createProcess() {
@@ -59,20 +60,17 @@ function createProcess() {
         processArray.push(p);
     }
 
-    console.log(getRandomNumber()); 
-
+    console.log('Processes created:', processArray);
 }
 
 function updateSections() {
     displayProcesses('incomingWorkload', incomingWorkload);
-    displayProcesses('runningTasks', runningTasks); 
+    displayProcesses('runningTasks', runningTasks);
     displayProcesses('completedTasks', completedTasks);
     displayProcesses('currentQueue', processArray);
 }
 
-
 function displayProcesses(containerId, processes) {
-
     const container = document.getElementById(containerId);
 
     if (!container) {
@@ -126,12 +124,11 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
 
             const [fromContainerId, index] = e.dataTransfer.getData('text/plain').split(',');
-            const fromContainer = document.getElementById(fromContainerId);
-            const process = processArray.splice(index, 1)[0];
+            const process = fromContainerId === 'incomingWorkload' ? incomingWorkload.splice(index, 1)[0] : null;
 
-            if (container.id === 'runningTasks') {
+            if (container.id === 'runningTasks' && process) {
                 runningTasks.push(process);
-            } else if (container.id === 'completedTasks') {
+            } else if (container.id === 'completedTasks' && process) {
                 completedTasks.push(process);
             }
 

@@ -1,5 +1,6 @@
+// Process Class Definition
 class Process {
-
+    // Private fields
     #arrivalTime;
     #firstRun;
     #completionTime;
@@ -13,39 +14,38 @@ class Process {
     }
 
     // Getter methods
-    get getArrivalTime() {
+    get arrivalTime() {
         return this.#arrivalTime;
     }
 
-    get getFirstRun() {
+    get firstRun() {
         return this.#firstRun;
     }
 
-    get getCompletionTime() {
+    get completionTime() {
         return this.#completionTime;
     }
 
-    get getRemainingTime() {
+    get remainingTime() {
         return this.#remainingTime;
     }
 
     // Setter methods
-    set setArrivalTime(time) {
+    set arrivalTime(time) {
         this.#arrivalTime = time;
     }
 
-    set setFirstRun(time) {
+    set firstRun(time) {
         this.#firstRun = time;
     }
 
-    set setCompletionTime(time) {
+    set completionTime(time) {
         this.#completionTime = time;
     }
 
-    set setRemainingTime(time) {
+    set remainingTime(time) {
         this.#remainingTime = time;
     }
-
 }
 
 export { Process};
