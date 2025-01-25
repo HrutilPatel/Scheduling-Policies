@@ -9,11 +9,12 @@ let intervalId = null;
 // Constants
 const fifoStr = "FIFO";
 const processArray = [];
+const currentQueue = []
 const runningTasks = [];
 const completedTasks = [];
 const incomingWorkload = [];
 const min = 10;
-const max = 70;
+const max = 12;
 
 function processData() {
     selectedPolicy = document.getElementById('Policylist').value;
@@ -27,25 +28,49 @@ function processData() {
 }
 
 function processFIFO() {
-    while (processArray.length > 0) {
-        const process = processArray.shift();
 
-        incomingWorkload.push(process);
+    while (numProcess != completedTasks.length) {
+
+        const clock = document.getElementById('clock');
+
+        if(processArray.length > 0){
+            incomingWorkload.push(processArray.shift());
+        }
+
         updateSections();
 
-        // Simulate processing by moving from incoming to running and then to completed
-        setTimeout(() => {
-            incomingWorkload.shift();
-            runningTasks.push(process);
-            updateSections();
+        for(let i = 0; i < incomingWorkload.length; i++){
 
-            setTimeout(() => {
-                runningTasks.shift();
-                completedTasks.push(process);
+
+            if(incomingWorkload[i].arrivalTime === clock.textContent){
+
+                currentQueue.push(incomingWorkload[i]); 
+                incomingWorkload.splice(i);
                 updateSections();
-            }, process.remainingTime * 100);
-        }, 500);
+
+                incomingWorkload.lenght = incomingWorkload.length - 1;
+                
+            }
+
+        }
+
+
+        console.log("I am running !"); 
+
+        // // Simulate processing by moving from incoming to running and then to completed
+        // setTimeout(() => {
+        //     incomingWorkload.shift();
+        //     runningTasks.push(process);
+        //     updateSections();
+
+        //     setTimeout(() => {
+        //         runningTasks.shift();
+        //         completedTasks.push(process);
+        //         updateSections();
+        //     }, process.remainingTime * 100);
+        // }, 500);
     }
+
 }
 
 function getRandomNumber() {
@@ -56,18 +81,17 @@ function createProcess() {
     processArray.length = 0;
 
     for (let i = 0; i < numProcess; i++) {
-        let p = new Process(0, 0, 0, getRandomNumber());
+        let p = new Process(getRandomNumber(), 0, 0, getRandomNumber());
         processArray.push(p);
     }
 
-    console.log('Processes created:', processArray);
 }
 
 function updateSections() {
     displayProcesses('incomingWorkload', incomingWorkload);
     displayProcesses('runningTasks', runningTasks);
     displayProcesses('completedTasks', completedTasks);
-    displayProcesses('currentQueue', processArray);
+    displayProcesses('currentQueue', currentQueue);
 }
 
 function displayProcesses(containerId, processes) {
