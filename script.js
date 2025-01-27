@@ -9,12 +9,12 @@ let intervalId = null;
 // Constants
 const fifoStr = "FIFO";
 const processArray = [];
-const currentQueue = []
+const currentQueue = [];
 const runningTasks = [];
 const completedTasks = [];
 const incomingWorkload = [];
-const min = 10;
-const max = 12;
+const min = 5;
+const max = 25;
 
 function processData() {
     selectedPolicy = document.getElementById('Policylist').value;
@@ -23,54 +23,50 @@ function processData() {
     createProcess();
 
     if (fifoStr === selectedPolicy) {
+        startClock();
         processFIFO();
     }
 }
 
 function processFIFO() {
+    const clock = document.getElementById('clock');
 
-    while (numProcess != completedTasks.length) {
+    intervalId = setInterval(() => {
+        time++;
+        clock.textContent = `Time: ${time}s`;
 
-        const clock = document.getElementById('clock');
-
-        if(processArray.length > 0){
+        // Add processes to incoming workload based on the lowest arrival time
+        processArray.sort((a, b) => a.arrivalTime - b.arrivalTime); // Sort by arrival time
+        while (processArray.length > 0 && processArray[0].arrivalTime <= time) {
             incomingWorkload.push(processArray.shift());
         }
 
-        updateSections();
-
-        for(let i = 0; i < incomingWorkload.length; i++){
-
-
-            if(incomingWorkload[i].arrivalTime === clock.textContent){
-
-                currentQueue.push(incomingWorkload[i]); 
-                incomingWorkload.splice(i);
-                updateSections();
-
-                incomingWorkload.lenght = incomingWorkload.length - 1;
-                
-            }
-
+        // Move processes from incoming workload to the current queue
+        while (incomingWorkload.length > 0) {
+            currentQueue.push(incomingWorkload.shift());
         }
 
+        // Process the first process in the current queue
+        if (currentQueue.length > 0 && runningTasks.length === 0) {
+            const process = currentQueue.shift();
+            process.firstRun = time; // Record first run time if not set
+            runningTasks.push(process);
 
-        console.log("I am running !"); 
+            setTimeout(() => {
+                runningTasks.pop();
+                process.completionTime = process.firstRun + process.remainingTime;
+                completedTasks.push(process);
+                updateSections();
 
-        // // Simulate processing by moving from incoming to running and then to completed
-        // setTimeout(() => {
-        //     incomingWorkload.shift();
-        //     runningTasks.push(process);
-        //     updateSections();
+                // Check if all processes are completed
+                if (completedTasks.length === numProcess) {
+                    clearInterval(intervalId);
+                }
+            }, process.remainingTime * 1000); // Simulate processing time
+        }
 
-        //     setTimeout(() => {
-        //         runningTasks.shift();
-        //         completedTasks.push(process);
-        //         updateSections();
-        //     }, process.remainingTime * 100);
-        // }, 500);
-    }
-
+        updateSections();
+    }, 1000);
 }
 
 function getRandomNumber() {
@@ -88,7 +84,7 @@ function createProcess() {
 }
 
 function updateSections() {
-    displayProcesses('incomingWorkload', incomingWorkload);
+    displayProcesses('incomingWorkload', processArray);
     displayProcesses('runningTasks', runningTasks);
     displayProcesses('completedTasks', completedTasks);
     displayProcesses('currentQueue', currentQueue);
@@ -111,8 +107,8 @@ function displayProcesses(containerId, processes) {
         processBox.setAttribute('data-index', index);
         processBox.innerHTML = `
             <p>Arrival: ${process.arrivalTime}</p>
-            <p>First Run: ${process.firstRun}</p>
-            <p>Completion: ${process.completionTime}</p>
+            <p>First Run: ${process.firstRun || 'N/A'}</p>
+            <p>Completion: ${process.completionTime || 'N/A'}</p>
             <p>Remaining: ${process.remainingTime}</p>`;
 
         processBox.addEventListener('dragstart', (e) => {
@@ -128,18 +124,13 @@ function startClock() {
 
     if (intervalId) clearInterval(intervalId);
 
-    intervalId = setInterval(() => {
-        time++;
-        clock.textContent = `Time: ${time}s`;
-    }, 1000);
+    time = 0; // Reset time
+    clock.textContent = `Time: ${time}s`;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
     const button = document.getElementById('processButton');
-    button.addEventListener('click', () => {
-        processData();
-        startClock();
-    });
+    button.addEventListener('click', processData);
 
     document.querySelectorAll('.process-container').forEach((container) => {
         container.addEventListener('dragover', (e) => e.preventDefault());
