@@ -69,8 +69,7 @@ function processRR() {
         while (incomingWorkload.length > 0) {
             currentQueue.push(incomingWorkload.shift());
         }
-        currentQueue.sort((a, b) => a.remainingTime - b.remainingTime); // Sort by shortest remaining time
-
+ 
         // Process the shortest job in the current queue
         if (currentQueue.length > 0 && runningTasks.length === 0) {
             const process = currentQueue.shift();
@@ -86,13 +85,14 @@ function processRR() {
 
                 if(process.remainingTime <= 0){
 
-                    process.completionTime = process.rrTrack + process.remainingTime; // Calculate completion time
+                    process.completionTime = time - process.remainingTime; // Calculate completion time
+                    process.remainingTime= 0;
                     completedTasks.push(process);
 
                 }
                 else {
 
-                    currentQueue.push(process);
+                    incomingWorkload.push(process);
 
                 }
 
@@ -138,7 +138,8 @@ function processSJF() {
 
             setTimeout(() => {
                 runningTasks.pop();
-                process.completionTime = time + process.remainingTime; // Calculate completion time
+                process.completionTime = process.firstRun + process.rrTrack;
+                process.remainingTime = 0;
                 completedTasks.push(process);
                 updateSections();
 
@@ -180,7 +181,8 @@ function processFIFO() {
 
             setTimeout(() => {
                 runningTasks.pop();
-                process.completionTime = process.firstRun + process.remainingTime;
+                process.completionTime = process.firstRun + process.rrTrack;
+                process.remainingTime = 0;
                 completedTasks.push(process);
                 updateSections();
 
@@ -200,10 +202,14 @@ function getRandomNumber() {
 }
 
 function createProcess() {
+
+    var remTime = getRandomNumber();
+    var arrTime = getRandomNumber();
+
     processArray.length = 0;
 
     for (let i = 0; i < numProcess; i++) {
-        let p = new Process(getRandomNumber(), 0, 0, getRandomNumber());
+        let p = new Process(arrTime, 0, 0, remTime, remTime);
         processArray.push(p);
     }
 

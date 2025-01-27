@@ -7,12 +7,12 @@ class Process {
     #remainingTime;
     #rrTrack; 
 
-    constructor(arrivalTime, firstRun, completionTime, remainingTime) {
+    constructor(arrivalTime, firstRun, completionTime, remainingTime, rrTrack) {
         this.#arrivalTime = arrivalTime;
         this.#firstRun = firstRun;
         this.#completionTime = completionTime;
         this.#remainingTime = remainingTime;
-        this.#rrTrack = completionTime;
+        this.#rrTrack = rrTrack;
     }
 
     // Getter methods
