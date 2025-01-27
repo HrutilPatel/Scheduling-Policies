@@ -113,7 +113,7 @@ function processSJF() {
     const clock = document.getElementById('clock');
 
     intervalId = setInterval(() => {
-        time = time + quantum;
+        time = time + 1;
         clock.textContent = `Time: ${time}s`;
 
         // Add processes to incoming workload based on the lowest arrival time
@@ -159,7 +159,7 @@ function processFIFO() {
     const clock = document.getElementById('clock');
 
     intervalId = setInterval(() => {
-        time = time + quantum;
+        time = time + 1;
         clock.textContent = `Time: ${time}s`;
 
         // Add processes to incoming workload based on the lowest arrival time
