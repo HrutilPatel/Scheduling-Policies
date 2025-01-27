@@ -203,13 +203,10 @@ function getRandomNumber() {
 
 function createProcess() {
 
-    var remTime = getRandomNumber();
-    var arrTime = getRandomNumber();
-
     processArray.length = 0;
 
     for (let i = 0; i < numProcess; i++) {
-        let p = new Process(arrTime, 0, 0, remTime, remTime);
+        let p = new Process(getRandomNumber(), 0, 0, getRandomNumber());
         processArray.push(p);
     }
 
