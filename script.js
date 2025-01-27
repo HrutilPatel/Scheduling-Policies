@@ -8,11 +8,12 @@ let intervalId = null;
 
 // Constants
 const fifoStr = "FIFO";
-const processArray = [];
-const currentQueue = [];
-const runningTasks = [];
-const completedTasks = [];
-const incomingWorkload = [];
+const sjfStr = "SJF"
+var processArray = [];
+var currentQueue = [];
+var runningTasks = [];
+var completedTasks = [];
+var incomingWorkload = [];
 const min = 5;
 const max = 25;
 
@@ -20,13 +21,70 @@ function processData() {
     selectedPolicy = document.getElementById('Policylist').value;
     numProcess = parseInt(document.getElementById('Processlist').value, 10);
 
+    // ReDeclaring Variables 
+    processArray = [];
+    currentQueue = [];
+    runningTasks = [];
+    completedTasks = [];
+    incomingWorkload = [];
+
     createProcess();
 
     if (fifoStr === selectedPolicy) {
         startClock();
         processFIFO();
     }
+    else if (sjfStr === selectedPolicy){ 
+
+        startClock();
+        processSJF();
+    }
 }
+
+function processSJF() {
+    const clock = document.getElementById('clock');
+
+    intervalId = setInterval(() => {
+        time++;
+        clock.textContent = `Time: ${time}s`;
+
+        // Add processes to incoming workload based on the lowest arrival time
+        processArray.sort((a, b) => a.arrivalTime - b.arrivalTime); // Sort by arrival time
+        while (processArray.length > 0 && processArray[0].arrivalTime <= time) {
+            incomingWorkload.push(processArray.shift());
+        }
+
+        // Sort current queue by remaining time (Shortest Job First)
+        while (incomingWorkload.length > 0) {
+            currentQueue.push(incomingWorkload.shift());
+        }
+        currentQueue.sort((a, b) => a.remainingTime - b.remainingTime); // Sort by shortest remaining time
+
+        // Process the shortest job in the current queue
+        if (currentQueue.length > 0 && runningTasks.length === 0) {
+            const process = currentQueue.shift();
+            if (process.firstRun === 0) {
+                process.firstRun = time; // Record first run time if not already set
+            }
+            runningTasks.push(process);
+
+            setTimeout(() => {
+                runningTasks.pop();
+                process.completionTime = time + process.remainingTime; // Calculate completion time
+                completedTasks.push(process);
+                updateSections();
+
+                // Check if all processes are completed
+                if (completedTasks.length === numProcess) {
+                    clearInterval(intervalId);
+                }
+            }, process.remainingTime * 1000); // Simulate processing time
+        }
+
+        updateSections();
+    }, 1000);
+}
+
 
 function processFIFO() {
     const clock = document.getElementById('clock');
