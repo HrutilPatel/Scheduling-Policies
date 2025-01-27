@@ -6,18 +6,25 @@ let selectedPolicy = "";
 let time = 0;
 let intervalId = null;
 
-// Constants
+// ----- Constants
 const fifoStr = "FIFO";
-const sjfStr = "SJF"
+const sjfStr = "SJF";
+const rrStr = "RR";
+
+// For random arrival and remaning time 
+const min = 5;
+const max = 25;
+
+// ------ Varaibles 
 var processArray = [];
 var currentQueue = [];
 var runningTasks = [];
 var completedTasks = [];
 var incomingWorkload = [];
-const min = 5;
-const max = 25;
+var quantum = 0;
 
 function processData() {
+
     selectedPolicy = document.getElementById('Policylist').value;
     numProcess = parseInt(document.getElementById('Processlist').value, 10);
 
@@ -28,6 +35,7 @@ function processData() {
     completedTasks = [];
     incomingWorkload = [];
 
+    quantum = parseInt(document.getElementById('Quantum').value, 10);
     createProcess();
 
     if (fifoStr === selectedPolicy) {
@@ -35,17 +43,77 @@ function processData() {
         processFIFO();
     }
     else if (sjfStr === selectedPolicy){ 
-
         startClock();
         processSJF();
     }
+    else if (rrStr === selectedPolicy) {
+        startClock();
+        processRR();
+    }
+}
+
+function processRR() {
+    const clock = document.getElementById('clock');
+
+    intervalId = setInterval(() => {
+        time = time + quantum;
+        clock.textContent = `Time: ${time}s`;
+
+        // Add processes to incoming workload based on the lowest arrival time
+        processArray.sort((a, b) => a.arrivalTime - b.arrivalTime); // Sort by arrival time
+        while (processArray.length > 0 && processArray[0].arrivalTime <= time) {
+            incomingWorkload.push(processArray.shift());
+        }
+
+        // Sort current queue by remaining time (Shortest Job First)
+        while (incomingWorkload.length > 0) {
+            currentQueue.push(incomingWorkload.shift());
+        }
+        currentQueue.sort((a, b) => a.remainingTime - b.remainingTime); // Sort by shortest remaining time
+
+        // Process the shortest job in the current queue
+        if (currentQueue.length > 0 && runningTasks.length === 0) {
+            const process = currentQueue.shift();
+            if (process.firstRun === 0) {
+                process.firstRun = time; // Record first run time if not already set
+            }
+            runningTasks.push(process);
+
+            setTimeout(() => {
+                runningTasks.pop();
+
+                process.remainingTime -= quantum;
+
+                if(process.remainingTime <= 0){
+
+                    process.completionTime = process.rrTrack + process.remainingTime; // Calculate completion time
+                    completedTasks.push(process);
+
+                }
+                else {
+
+                    currentQueue.push(process);
+
+                }
+
+                updateSections();
+
+                // Check if all processes are completed
+                if (completedTasks.length === numProcess) {
+                    clearInterval(intervalId);
+                }
+            }, quantum*1000); // Simulate processing time
+        }
+
+        updateSections();
+    }, 1000);
 }
 
 function processSJF() {
     const clock = document.getElementById('clock');
 
     intervalId = setInterval(() => {
-        time++;
+        time = time + quantum;
         clock.textContent = `Time: ${time}s`;
 
         // Add processes to incoming workload based on the lowest arrival time
@@ -78,7 +146,7 @@ function processSJF() {
                 if (completedTasks.length === numProcess) {
                     clearInterval(intervalId);
                 }
-            }, process.remainingTime * 1000); // Simulate processing time
+            }, (process.remainingTime * 1000)/quantum); // Simulate processing time
         }
 
         updateSections();
@@ -90,7 +158,7 @@ function processFIFO() {
     const clock = document.getElementById('clock');
 
     intervalId = setInterval(() => {
-        time++;
+        time = time + quantum;
         clock.textContent = `Time: ${time}s`;
 
         // Add processes to incoming workload based on the lowest arrival time
@@ -120,7 +188,7 @@ function processFIFO() {
                 if (completedTasks.length === numProcess) {
                     clearInterval(intervalId);
                 }
-            }, process.remainingTime * 1000); // Simulate processing time
+            }, (process.remainingTime * 1000)/quantum); // Simulate processing time
         }
 
         updateSections();
@@ -209,3 +277,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+

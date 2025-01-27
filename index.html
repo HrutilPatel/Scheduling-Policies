@@ -19,7 +19,7 @@
 
     <main class="container py-4">
         <div class="row mb-3">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label for="Policylist" class="form-label">Select the Policy:</label>
                 <select id="Policylist" class="form-select">
                     <option value="FIFO">FIFO</option>
@@ -28,7 +28,7 @@
                     <option value="MLFQ">MLFQ</option>
                 </select>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label for="Processlist" class="form-label">Number of Processes:</label>
                 <select id="Processlist" class="form-select">
                     <option value="5">5</option>
@@ -37,7 +37,23 @@
                     <option value="20">20</option>
                 </select>
             </div>
+            <div class="col-md-4" id="quantumContainer">
+                <label for="Quantum" class="form-label">Select Quantum :</label>
+                <select id="Quantum" class="form-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
         </div>
+        
 
         <div class="text-center mb-4">
             <button id="processButton" class="btn btn-primary">Process Data</button>

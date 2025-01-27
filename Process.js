@@ -5,17 +5,23 @@ class Process {
     #firstRun;
     #completionTime;
     #remainingTime;
+    #rrTrack; 
 
     constructor(arrivalTime, firstRun, completionTime, remainingTime) {
         this.#arrivalTime = arrivalTime;
         this.#firstRun = firstRun;
         this.#completionTime = completionTime;
         this.#remainingTime = remainingTime;
+        this.#rrTrack = completionTime;
     }
 
     // Getter methods
     get arrivalTime() {
         return this.#arrivalTime;
+    }
+
+    get rrTrack() {
+        return this.#rrTrack;
     }
 
     get firstRun() {
