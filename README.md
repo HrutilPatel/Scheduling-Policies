@@ -18,7 +18,7 @@ This project features an interactive web application that visualizes three funda
 - **Frontend**: HTML, CSS
 - **Backend**: JavaScript
 
-## Live Website
+## Website
 
 You can access the live website and explore the scheduling policy visualizations here:  [Scheduling Policy Visualization](https://hrutilpatel.github.io/Scheduling-Policies/)
 
