@@ -92,7 +92,7 @@ function processRR() {
                 }
                 else {
 
-                    incomingWorkload.push(process);
+                    currentQueue.push(process);
 
                 }
 
