@@ -147,7 +147,7 @@ function processSJF() {
                 if (completedTasks.length === numProcess) {
                     clearInterval(intervalId);
                 }
-            }, (process.remainingTime * 1000)/quantum); // Simulate processing time
+            }, (process.remainingTime * 1000)); // Simulate processing time
         }
 
         updateSections();
@@ -190,7 +190,7 @@ function processFIFO() {
                 if (completedTasks.length === numProcess) {
                     clearInterval(intervalId);
                 }
-            }, (process.remainingTime * 1000)/quantum); // Simulate processing time
+            }, (process.remainingTime * 1000)); // Simulate processing time
         }
 
         updateSections();
