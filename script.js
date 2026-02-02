@@ -5,6 +5,7 @@ let numProcess = 0;
 let selectedPolicy = "";
 let time = 0;
 let intervalId = null;
+let runningProcessEndTime = null;
 
 // ----- Constants
 const fifoStr = "FIFO";
@@ -36,13 +37,26 @@ function processData() {
     incomingWorkload = [];
 
     quantum = parseInt(document.getElementById('Quantum').value, 10);
-    createProcess();
+
+
+    const arrivalInput = document.getElementById("arrivalInput").value.trim();
+    const burstInput = document.getElementById("burstInput").value.trim();
+
+    const arrivalTimes = arrivalInput
+        ? arrivalInput.split(",").map(v => parseInt(v.trim(), 10))
+        : null;
+
+    const burstTimes = burstInput
+        ? burstInput.split(",").map(v => parseInt(v.trim(), 10))
+        : null;
+
+    createProcess(arrivalTimes, burstTimes);
 
     if (fifoStr === selectedPolicy) {
         startClock();
         processFIFO();
     }
-    else if (sjfStr === selectedPolicy){ 
+    else if (sjfStr === selectedPolicy) {
         startClock();
         processSJF();
     }
@@ -69,7 +83,7 @@ function processRR() {
         while (incomingWorkload.length > 0) {
             currentQueue.push(incomingWorkload.shift());
         }
- 
+
         // Process the shortest job in the current queue
         if (currentQueue.length > 0 && runningTasks.length === 0) {
             const process = currentQueue.shift();
@@ -77,16 +91,18 @@ function processRR() {
                 process.firstRun = time; // Record first run time if not already set
             }
             runningTasks.push(process);
+            runningProcessEndTime = time + Math.min(quantum, process.remainingTime);
 
             setTimeout(() => {
                 runningTasks.pop();
+                runningProcessEndTime = null;
 
                 process.remainingTime -= quantum;
 
-                if(process.remainingTime <= 0){
+                if (process.remainingTime <= 0) {
 
                     process.completionTime = time - process.remainingTime; // Calculate completion time
-                    process.remainingTime= 0;
+                    process.remainingTime = 0;
                     completedTasks.push(process);
 
                 }
@@ -102,7 +118,7 @@ function processRR() {
                 if (completedTasks.length === numProcess) {
                     clearInterval(intervalId);
                 }
-            }, quantum*1000); // Simulate processing time
+            }, quantum * 1000); // Simulate processing time
         }
 
         updateSections();
@@ -135,6 +151,7 @@ function processSJF() {
                 process.firstRun = time; // Record first run time if not already set
             }
             runningTasks.push(process);
+            runningProcessEndTime = time + process.remainingTime;
 
             setTimeout(() => {
                 runningTasks.pop();
@@ -178,6 +195,7 @@ function processFIFO() {
             const process = currentQueue.shift();
             process.firstRun = time; // Record first run time if not set
             runningTasks.push(process);
+            runningProcessEndTime = time + process.remainingTime;
 
             setTimeout(() => {
                 runningTasks.pop();
@@ -201,16 +219,22 @@ function getRandomNumber() {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function createProcess() {
-
+function createProcess(arrivalTimes = null, burstTimes = null) {
     processArray.length = 0;
 
     for (let i = 0; i < numProcess; i++) {
-        let p = new Process(getRandomNumber(), 0, 0, getRandomNumber());
-        processArray.push(p);
-    }
+        const arrival = arrivalTimes && arrivalTimes[i] !== undefined
+            ? arrivalTimes[i]
+            : getRandomNumber();
 
+        const burst = burstTimes && burstTimes[i] !== undefined
+            ? burstTimes[i]
+            : getRandomNumber();
+
+        processArray.push(new Process(arrival, 0, 0, burst));
+    }
 }
+
 
 function updateSections() {
     displayProcesses('incomingWorkload', processArray);
@@ -234,11 +258,24 @@ function displayProcesses(containerId, processes) {
         processBox.classList.add('process-box');
         processBox.draggable = true;
         processBox.setAttribute('data-index', index);
+        const isRunning = containerId === "runningTasks";
+        const timeLeft = isRunning && runningProcessEndTime !== null
+            ? Math.max(0, runningProcessEndTime - time)
+            : null;
+
         processBox.innerHTML = `
             <p>Arrival: ${process.arrivalTime}</p>
-            <p>First Run: ${process.firstRun || 'N/A'}</p>
-            <p>Completion: ${process.completionTime || 'N/A'}</p>
-            <p>Remaining: ${process.remainingTime}</p>`;
+            <p>First Run: ${process.firstRun || "N/A"}</p>
+            <p>Completion: ${process.completionTime || "N/A"}</p>
+            <p>Remaining: ${process.remainingTime}</p>
+            ${timeLeft !== null
+                        ? `<p style="font-weight:600; color:#1e40af;">
+                        Time Left: ${timeLeft}s
+                    </p>`
+                        : ""
+                    }
+        `;
+
 
         processBox.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('text/plain', containerId + ',' + index);
